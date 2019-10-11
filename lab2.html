@@ -43,23 +43,23 @@
 
     </form>
 
-    <mainmenu hidden id="mainmenu">
+    <displayList hidden id="displayList">
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Books')">Books</button>
-            <button class="tablinks" onclick="openTab(event, 'CDs')">CDs</button>
+            <button class="tablinks" onclick="openTab(event, 'BooksContent')">&#x1F4D6; Books</button>
+            <button class="tablinks" onclick="openTab(event, 'CDsContent')">&#128191; CDs</button>
         </div>
 
-        <div id="Books" class="tabcontent">
+        <div id="BooksContent" class="tabcontent">
             <p>Books are due in 30days.</p>
+            <div id="DisplayedBooks" class="row">
+            </div>
         </div>
 
-        <div hidden id="CDs" class="tabcontent">
+        <div hidden id="CDsContent" class="tabcontent">
             <p>CDs are due in 10days.</p>
+            <div id="DisplayedCDs" class="row">
+            </div>
         </div>
-    </mainmenu>
-
-    <displayList>
-        <ol id="available-items"></ol>
     </displayList>
 
     <checkoutPage>

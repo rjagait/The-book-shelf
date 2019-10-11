@@ -2,6 +2,8 @@ var username;
 var useremail;
 var userbirthyear;
 var currentYear;
+var books;
+var CDs;
 
 /**
  * Master function which does the below actions
@@ -34,6 +36,31 @@ function initialize() {
 
     currentYear = new Date().getFullYear();
     console.log("Current working year is " + currentYear);
+
+    books = [
+        "A Tale of Two Cities",
+        "The Lord of the Rings",
+        "The Little Prince",
+        "Harry Potter and the Philosopher's Stone",
+        "The Hobbit",
+        "Alice's Adventures in Wonderland",
+        "Dream of the Red Chamber",
+        "And Then There Were None",
+        "The Lion, the Witch and the Wardrobe",
+        "She, A History of Adventure",
+    ];
+    CDs = [
+        "Going Seventeen",
+        "The Brown Band",
+        "The Ultimate Collection",
+        "Clapton Chronicles, The Best of Eric Clapton",
+        "50 Number Ones",
+        "19 - by Adele",
+        "Now That’s What I Call Music! 92",
+        "April, and a Flower",
+        "Mama - by EXO",
+        "21 - by Adele",
+    ];
 }
 
 /**
@@ -90,20 +117,30 @@ function AddUserDetails() {
 
 /**
  * Controls displaying the main menu
+ * list of available items along with cart status
  */
 function DisplayMainMenu() {
-    var mainMenu = document.getElementById("mainmenu");
-    mainMenu.style.display = "block";
+    //unhide main menu
+    var displayList = document.getElementById("displayList");
+    displayList.style.display = "block";
 
+    //Add books to available item list
+    for (i = 0; i < books.length; i++) {
+        var elementColumn = createContentElement(books[i], "DisplayedBooks");
+    }
 
+    //Add CDs to available item list
+    for (i = 0; i < CDs.length; i++) {
+        var elementColumn = createContentElement(CDs[i], "DisplayedCDs");
+    }
 }
 
 /**
  * Toggle between the Books and CDs tab and display the corresponding content
  * @param {*} evt This would store the location
- * @param {*} cityName This store if teh button is CD or Book
+ * @param {*} tabName This store if teh button is CD or Book
  */
-function openTab(evt, cityName) {
+function openTab(evt, tabName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -113,6 +150,59 @@ function openTab(evt, cityName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(cityName).style.display = "block";
+    document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
+}
+
+/**
+ * Creates and adds the card to the respective block in main menu
+ * @param {*} bookName Name of the book to be added to the list
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function createContentElement(bookName, blockName) {
+    var elementTitle = document.createElement("p");
+    elementTitle.classList.add("title");
+    elementTitle.innerHTML = bookName;
+
+    var elementButton = document.createElement("button");
+    elementButton.classList.add("button");
+    elementButton.innerHTML = "Add";
+    elementButton.onclick = function() {
+        AddToCheckout(bookName, blockName);
+    }
+
+    var elementContainer = document.createElement("div");
+    elementContainer.classList.add("container");
+    elementContainer.appendChild(elementTitle);
+    elementContainer.appendChild(elementButton);
+
+    var elementImage = document.createElement("img");
+    elementImage.src = "images/" + bookName + ".jpg";
+    elementImage.alt = bookName;
+    elementImage.style = "width: 80%";
+
+    var elementCard = document.createElement("div");
+    elementCard.classList.add("card");
+    elementCard.appendChild(elementImage);
+    elementCard.appendChild(elementContainer);
+
+    var elementColumn = document.createElement("div");
+    elementColumn.classList.add("column");
+    elementColumn.id = bookName;
+    elementColumn.appendChild(elementCard);
+
+    document.getElementById(blockName).appendChild(elementColumn);
+}
+
+/**
+ * Conttrols the checkout page actions
+ * Also, removes the added item from available item list
+ */
+function AddToCheckout(bookName, blockName) {
+    console.log("This function will remove the button and add it to checkout" + bookName + blockName);
+
+    //remove element from available item list
+    var elementToRemove = document.getElementById(bookName);
+    elementToRemove.remove();
+
 }
