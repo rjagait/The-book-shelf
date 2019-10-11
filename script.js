@@ -7,16 +7,19 @@ var currentYear;
  * Master function which does the below actions
  * 1. Read the inputs
  * 2. Check if the inputs are valid
- * 3. COnfirm with user if details are correct
+ * 3. Confirm with user if details are correct
  */
 function UserInformation() {
+    console.log("Validation completed, confirming details with user");
     initialize();
 
     valid = CheckIfValid();
     if (valid) {
         console.log("Validation completed, confirming details with user");
-        ConfirmDetailsAndAct();
+        AddUserDetails();
+        DisplayMainMenu();
     }
+
 }
 
 /**
@@ -26,8 +29,8 @@ function initialize() {
     console.log("Reading inputs...");
     username = document.getElementById('name');
     useremail = document.getElementById('email');
-    userbirthyear = document.getElementById('birth-year');
-    console.log("Inputs Read.");
+    userbirthyear = document.getElementById('birthyear');
+    console.log("Inputs Read.", username.value, useremail.value, userbirthyear.value);
 
     currentYear = new Date().getFullYear();
     console.log("Current working year is " + currentYear);
@@ -65,43 +68,51 @@ function CheckIfValid() {
  * Format: Jane Doe (jdoe@ example.com) [ Group]
  * where Group is “Adult” if the age is above 18 and “Child’ if not.
  */
-function ConfirmDetailsAndAct() {
+function AddUserDetails() {
     var userDetails = document.getElementById("UserDetails");
     userDetails.remove();
+
+    var heading = document.getElementById("heading");
+    heading.innerHTML = "Main Menu"
 
     //confirming age group and formatting user details
     ageGroup = (currentYear - userbirthyear.value) > 18 ? "Adult" : "Child";
     console.log("Age Group recognized as " + ageGroup);
     userDetailFormat = username.value + "(" + useremail.value + ") [" + ageGroup + "]";
     console.log("User Details: " + userDetailFormat);
-    confirmationMsg = "Please check the details above and click OK to proceed.";
 
-    //adding elements on webpage to display details and confirm
+    var userDetail = document.getElementById("userDetail");
     var displayUserDetails = document.createElement("P");
     displayUserDetails.innerHTML = userDetailFormat;
 
-    var displayConfirmationMsg = document.createElement("P");
-    displayConfirmationMsg.innerHTML = confirmationMsg.italics();
-
-    var confirmationButton = document.createElement("BUTTON");
-    confirmationButton.innerHTML = "OK";
-
-    displayUserDetails.appendChild(displayConfirmationMsg);
-    displayUserDetails.appendChild(confirmationButton);
-    document.body.appendChild(displayUserDetails);
-
-    OnConfirming(confirmationButton);
+    userDetail.appendChild(displayUserDetails);
 }
 
 /**
- * When the user confirms the details, 
- * this function redirects to next page
- * @param {element of type button} confirmationButton to monitor click on button and act
+ * Controls displaying the main menu
  */
-function OnConfirming(confirmationButton) {
-    confirmationButton.addEventListener("click", function () {
-        console.log("Confirmed by user, redirecting to next page");
-        alert("Did something");
+function DisplayMainMenu() {
+    var mainMenu = document.getElementById("mainmenu");
+    mainMenu.style.display = "block";
 
-    });
+
+}
+
+/**
+ * Toggle between the Books and CDs tab and display the corresponding content
+ * @param {*} evt This would store the location
+ * @param {*} cityName This store if teh button is CD or Book
+ */
+function openTab(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
 }

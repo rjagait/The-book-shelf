@@ -5,18 +5,66 @@
     <title>ECE 9065 - Lab 2</title>
     <meta charset="UTF-8">
     <script type="text/javascript" src="script.js"></script>
+    <link rel="stylesheet" href="lab2.css" />
 </head>
 
 <body>
-    <h1>User Information</h1>
+    <userdetail id="userDetail">
+    </userdetail>
 
-    <form id="UserDetails">
-        Name: <input type="text" id="name" maxlength="100"><br>
-        Email: <input type="email" id="email"><br>
-        Year of birth: <input type="number" id="birth-year" min="1900"><br>
+    <h1 id="heading">User Information</h1>
 
-        <button type="button" onclick="UserInformation()">Login</button>
+    <form action="/action_page.php" method="POST" id="UserDetails">
+        <div class="container">
+            <label for="name"><b>Username</b></label><br>
+            <input type="text" id="name" placeholder="Enter user name" name="name" maxlength="100" title="Max length of 100 is alowed" required><br>
+
+            <label for="email"><b>Email ID</b></label><br>
+            <input type="email" id="email" placeholder="Enter Email ID" name="email" title="Email expected" required><br>
+
+            <label for="birthyear"><b>Year of Birth</b></label><br>
+            <input type="number" id="birthyear" placeholder="Enter the year of birth" name="birthyear" min="1900" title="It should lie between 1900 and current year" required><br>
+
+            <label for="psw"><b>Password</b></label><br>
+            <input type="password" placeholder="Enter Password" name="password" required><br>
+
+            <button type="button" onclick="UserInformation()">Login</button><br>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Remember me<br>
+            </label>
+        </div>
+
+        <div class="container" style="background-color: #f1f1f1">
+            <button type="button" class="cancelbtn"></button>
+            <span class="psw"> <a href="#">Forgot password?</a></span>
+            <span class="psw"><a href="#">Register</a> | </span>
+
+        </div>
+
     </form>
+
+    <mainmenu hidden id="mainmenu">
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Books')">Books</button>
+            <button class="tablinks" onclick="openTab(event, 'CDs')">CDs</button>
+        </div>
+
+        <div id="Books" class="tabcontent">
+            <p>Books are due in 30days.</p>
+        </div>
+
+        <div hidden id="CDs" class="tabcontent">
+            <p>CDs are due in 10days.</p>
+        </div>
+    </mainmenu>
+
+    <displayList>
+        <ol id="available-items"></ol>
+    </displayList>
+
+    <checkoutPage>
+        <ol id="basket"></ol>
+    </checkoutPage>
 
 </body>
 
