@@ -4,6 +4,8 @@ var userbirthyear;
 var currentYear;
 var books;
 var CDs;
+var checkoutbooks = [];
+var checkoutCDs = [];
 
 /**
  * Master function which does the below actions
@@ -112,7 +114,17 @@ function AddUserDetails() {
     var displayUserDetails = document.createElement("P");
     displayUserDetails.innerHTML = userDetailFormat;
 
+    //Adding cart button
+    var cartButton = document.createElement("button");
+    cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
+    cartButton.id = "checkoutButton";
+    cartButton.onclick = function() {
+        document.getElementById("checkoutPage").style.display = 'block';
+    }
+    displayUserDetails.appendChild(cartButton);
+
     userDetail.appendChild(displayUserDetails);
+
 }
 
 /**
@@ -126,13 +138,16 @@ function DisplayMainMenu() {
 
     //Add books to available item list
     for (i = 0; i < books.length; i++) {
-        var elementColumn = createContentElement(books[i], "DisplayedBooks");
+        createContentElement(books[i], "DisplayedBooks");
     }
 
     //Add CDs to available item list
     for (i = 0; i < CDs.length; i++) {
-        var elementColumn = createContentElement(CDs[i], "DisplayedCDs");
+        createContentElement(CDs[i], "DisplayedCDs");
     }
+
+    //Add checkout cart details, will keep it hidden till the cart button is clicked
+    CheckoutCartDetails();
 }
 
 /**
@@ -156,19 +171,19 @@ function openTab(evt, tabName) {
 
 /**
  * Creates and adds the card to the respective block in main menu
- * @param {*} bookName Name of the book to be added to the list
+ * @param {*} itemName Name of the book to be added to the list
  * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
  */
-function createContentElement(bookName, blockName) {
+function createContentElement(itemName, blockName) {
     var elementTitle = document.createElement("p");
     elementTitle.classList.add("title");
-    elementTitle.innerHTML = bookName;
+    elementTitle.innerHTML = itemName;
 
     var elementButton = document.createElement("button");
     elementButton.classList.add("button");
     elementButton.innerHTML = "Add";
     elementButton.onclick = function() {
-        AddToCheckout(bookName, blockName);
+        AddToCheckout(itemName, blockName);
     }
 
     var elementContainer = document.createElement("div");
@@ -177,8 +192,8 @@ function createContentElement(bookName, blockName) {
     elementContainer.appendChild(elementButton);
 
     var elementImage = document.createElement("img");
-    elementImage.src = "images/" + bookName + ".jpg";
-    elementImage.alt = bookName;
+    elementImage.src = "images/" + itemName + ".jpg";
+    elementImage.alt = itemName;
     elementImage.style = "width: 80%";
 
     var elementCard = document.createElement("div");
@@ -188,7 +203,7 @@ function createContentElement(bookName, blockName) {
 
     var elementColumn = document.createElement("div");
     elementColumn.classList.add("column");
-    elementColumn.id = bookName;
+    elementColumn.id = itemName;
     elementColumn.appendChild(elementCard);
 
     document.getElementById(blockName).appendChild(elementColumn);
@@ -198,11 +213,102 @@ function createContentElement(bookName, blockName) {
  * Conttrols the checkout page actions
  * Also, removes the added item from available item list
  */
-function AddToCheckout(bookName, blockName) {
-    console.log("This function will remove the button and add it to checkout" + bookName + blockName);
+function AddToCheckout(itemName, blockName) {
+    console.log("This function will remove the button and add it to checkout" + itemName + blockName);
 
     //remove element from available item list
-    var elementToRemove = document.getElementById(bookName);
+    var elementToRemove = document.getElementById(itemName);
     elementToRemove.remove();
 
+    if (blockName == "DisplayedBooks") {
+        checkoutbooks.push(itemName);
+    } else {
+        checkoutCDs.push(itemName);
+    }
+
+    UpdateCheckoutIcon();
+    UpdateCheckoutList(itemName, blockName);
+
+    console.log("Checkout Items: " + checkoutCDs.length + checkoutbooks.length);
+}
+
+function UpdateCheckoutIcon() {
+    var totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
+
+    var cartButton = document.getElementById("checkoutButton");
+    cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>' + totalCheckoutItems;
+
+    var cartHeading = document.getElementById("checkoutCartHeading");
+    cartHeading.innerHTML = 'Cart <span class="price" style="color:black"><img src="images/cart_icon.svg" alt="looking" width=20><b>' + totalCheckoutItems + '</b></span>';
+}
+
+function UpdateCheckoutList(itemName, blockName) {
+
+    var checkoutDisplayElement = document.createElement("li");
+    var checkoutItemName = document.createTextNode(itemName);
+    checkoutDisplayElement.appendChild(checkoutItemName);
+    // var itemDueBy
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "Remove";
+    closeButton.onclick = function() {
+        this.parentElement.style.display = 'none';
+        createContentElement(itemName, blockName);
+        RemoveItemFromCheckoutListArray(itemName, blockName);
+        UpdateCheckoutIcon();
+    }
+    closeButton.classList.add("close");
+    checkoutDisplayElement.appendChild(closeButton);
+    // checkoutDisplay.appendChild(checkoutDisplayElement);
+
+    document.getElementById("checkoutDisplay").appendChild(checkoutDisplayElement);
+}
+
+function RemoveItemFromCheckoutListArray(itemName, blockName) {
+    console.log("Remove from checkout list: " + itemName + " with block as " + blockName);
+
+    if (blockName == "DisplayedBooks") {
+        var index = checkoutbooks.indexOf(itemName);
+        if (index > -1) {
+            checkoutbooks.splice(index, 1);
+        }
+    } else if (blockName == "DisplayedCDs") {
+        var index = checkoutCDs.indexOf(itemName);
+        if (index > -1) {
+            checkoutCDs.splice(index, 1);
+        }
+    }
+}
+
+function CheckoutCartDetails() {
+
+    var checkoutPage = document.getElementById("checkoutPage");
+
+    var checkoutWindowCloseButton = document.createElement("button");
+    checkoutWindowCloseButton.innerHTML = "Close";
+    checkoutWindowCloseButton.onclick = function() {
+        checkoutPage.style.display = "none";
+    }
+    checkoutPage.appendChild(checkoutWindowCloseButton);
+
+    var cartHeading = document.createElement("h4");
+    cartHeading.id = "checkoutCartHeading";
+    cartHeading.innerHTML = 'Cart <span class="price" style="color:black"><img src="images/cart_icon.svg" alt="looking" width=20><b>0</b></span>';
+    checkoutPage.appendChild(cartHeading);
+
+    var checkoutDisplay = document.createElement("ul");
+    checkoutDisplay.id = "checkoutDisplay";
+    checkoutPage.appendChild(checkoutDisplay);
+
+    var checkoutButton = document.createElement("button");
+    checkoutButton.innerHTML = "Checkout";
+    checkoutButton.onclick = function() {
+        DisplayDialog();
+    }
+    checkoutPage.appendChild(checkoutButton);
+
+
+}
+
+function DisplayDialog() {
+    var confirmationDialogBox = document.getElementById("confirmation");
 }
