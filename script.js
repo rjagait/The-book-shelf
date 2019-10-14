@@ -77,18 +77,28 @@ function CheckIfValid() {
     console.log("Checking if email and year are valid");
     isValidEmail = useremail.checkValidity();
     isValidYear = userbirthyear.checkValidity();
+    isValidName = username.checkValidity();
+    var alertMessage = "";
+
+    if (!isValidName) {
+        console.log("Invalid Name");
+        alertMessage = alertMessage + "Only characters are allowed in name, found " + username.value + ".\n";
+    }
 
     if (!isValidEmail) {
         console.log("Invalid Email");
-        alert("Incorrect Email!\n\
-            Please check your email before retrying.");
-        return false;
-    } else if (!isValidYear || userbirthyear.value > currentYear) {
-        console.log("Invalid Year");
-        alert("Invalid birth year!\n\
-            Please check your birth-year before retrying.");
-        return false;
+        alertMessage = alertMessage + "Expecting email, found " + useremail.value + ".\n";
     };
+
+    if (!isValidYear || userbirthyear.value > currentYear) {
+        console.log("Invalid Year");
+        alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
+    };
+
+    if (alertMessage.length != 0) {
+        alert("Invalid inputs please check:\n" + alertMessage);
+        return false;
+    }
     return true;
 }
 
@@ -264,8 +274,20 @@ function UpdateCheckoutIcon() {
  */
 function UpdateCheckoutList(itemName, blockName) {
     var checkoutDisplayElement = document.createElement("li");
+    checkoutDisplayElement.style.fontSize = "medium";
     var checkoutItemName = document.createTextNode(itemName);
     checkoutDisplayElement.appendChild(checkoutItemName);
+
+    var itemDetails = document.createElement("p");
+    if (blockName == "DisplayedBooks") {
+        var due_in = "due in 30 days";
+        itemDetails.innerHTML = due_in.italics();
+    } else {
+        var due_in = "due in 10 days";
+        itemDetails.innerHTML = due_in.italics();
+    }
+    checkoutDisplayElement.appendChild(itemDetails);
+
     var closeButton = document.createElement("button");
     closeButton.innerHTML = "Remove";
     closeButton.onclick = function() {
