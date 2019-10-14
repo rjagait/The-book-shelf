@@ -179,6 +179,7 @@ function createContentElement(itemName, blockName) {
     elementTitle.classList.add("title");
     elementTitle.innerHTML = itemName;
 
+    //add and remove buttons for all cards
     var elementButton = document.createElement("button");
     elementButton.classList.add("button");
     elementButton.innerHTML = "Add";
@@ -191,6 +192,7 @@ function createContentElement(itemName, blockName) {
     elementContainer.appendChild(elementTitle);
     elementContainer.appendChild(elementButton);
 
+    //add images
     var elementImage = document.createElement("img");
     elementImage.src = "images/" + itemName + ".jpg";
     elementImage.alt = itemName;
@@ -226,31 +228,52 @@ function AddToCheckout(itemName, blockName) {
         checkoutCDs.push(itemName);
     }
 
+    //update on add to cart selection
     UpdateCheckoutIcon();
     UpdateCheckoutList(itemName, blockName);
 
     console.log("Checkout Items: " + checkoutCDs.length + checkoutbooks.length);
 }
 
+/**
+ * Acts upon the change in number of checkout items, as per the count of the 2 variables, checkoutCDs and checkoutbooks
+ */
 function UpdateCheckoutIcon() {
     var totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
 
+    //update the checkout notification count
     var cartButton = document.getElementById("checkoutButton");
     cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>' + totalCheckoutItems;
 
+    //update the count in checout cart
     var cartHeading = document.getElementById("checkoutCartHeading");
     cartHeading.innerHTML = 'Cart <span class="price" style="color:black"><img src="images/cart_icon.svg" alt="looking" width=20><b>' + totalCheckoutItems + '</b></span>';
+
+    //Enable the 'checkout' button on checkout cart only if count is non-zero.
+    if (totalCheckoutItems > 0) {
+        document.getElementById("checkoutCartButton").disabled = false;
+    } else {
+        document.getElementById("checkoutCartButton").disabled = true;
+    }
 }
 
+/**
+ * Updated the list shown in checkout cart as for any newly 'add to cart' item
+ * @param {*} itemName corresponds to the name of the book/CD
+ * @param {*} blockName 
+ */
 function UpdateCheckoutList(itemName, blockName) {
-
     var checkoutDisplayElement = document.createElement("li");
     var checkoutItemName = document.createTextNode(itemName);
     checkoutDisplayElement.appendChild(checkoutItemName);
-    // var itemDueBy
     var closeButton = document.createElement("button");
     closeButton.innerHTML = "Remove";
     closeButton.onclick = function() {
+        /**
+         * Actions:
+         * 1. remove item from checkout list on checkout page and the checkout variables
+         * 2. Since the count of checkout items changed, update the corresponding places
+         */
         this.parentElement.style.display = 'none';
         createContentElement(itemName, blockName);
         RemoveItemFromCheckoutListArray(itemName, blockName);
@@ -258,11 +281,15 @@ function UpdateCheckoutList(itemName, blockName) {
     }
     closeButton.classList.add("close");
     checkoutDisplayElement.appendChild(closeButton);
-    // checkoutDisplay.appendChild(checkoutDisplayElement);
 
     document.getElementById("checkoutDisplay").appendChild(checkoutDisplayElement);
 }
 
+/**
+ * Removes the list of item from the checkout list.
+ * @param {*} itemName Expects name of the item
+ * @param {*} blockName 
+ */
 function RemoveItemFromCheckoutListArray(itemName, blockName) {
     console.log("Remove from checkout list: " + itemName + " with block as " + blockName);
 
@@ -279,6 +306,10 @@ function RemoveItemFromCheckoutListArray(itemName, blockName) {
     }
 }
 
+/**
+ * Creating blocks in the checkout page (hidden by default). This is the initial picture of what the page would look like.
+ * for all the 'add to cart' items, they will be updated when they are selected.
+ */
 function CheckoutCartDetails() {
 
     var checkoutPage = document.getElementById("checkoutPage");
@@ -290,25 +321,176 @@ function CheckoutCartDetails() {
     }
     checkoutPage.appendChild(checkoutWindowCloseButton);
 
+    //Heading cotains the count of the number of items, which is changed realtime.
     var cartHeading = document.createElement("h4");
     cartHeading.id = "checkoutCartHeading";
     cartHeading.innerHTML = 'Cart <span class="price" style="color:black"><img src="images/cart_icon.svg" alt="looking" width=20><b>0</b></span>';
     checkoutPage.appendChild(cartHeading);
 
+    //an unordered list item created which will be updated when required.
     var checkoutDisplay = document.createElement("ul");
     checkoutDisplay.id = "checkoutDisplay";
     checkoutPage.appendChild(checkoutDisplay);
 
     var checkoutButton = document.createElement("button");
     checkoutButton.innerHTML = "Checkout";
+    checkoutButton.id = "checkoutCartButton";
+    checkoutButton.disabled = true;
     checkoutButton.onclick = function() {
         DisplayDialog();
     }
     checkoutPage.appendChild(checkoutButton);
+}
 
+/**
+ * Creating blocks in the confirmation page (hidden by default). 
+ * This is called to confirm on the checkout of the items, and will display the count and the item names.
+ */
+function DisplayDialog() {
+
+    var checkoutPage = document.getElementById("checkoutPage");
+    checkoutPage.style.display = 'none';
+
+    var confirmationScreen = document.getElementById("confirmation");
+    confirmationScreen.style.display = "block";
+
+    //create content block to make stying the block easier
+    var confirmationDialogBox = document.createElement("div");
+    confirmationDialogBox.classList.add("confirmation-content");
+    confirmationDialogBox.id = "confirmationDialogBox";
+    confirmationScreen.appendChild(confirmationDialogBox);
+
+    //get confirmation header
+    var confirmationHeader = GetConfirmationHeader();
+
+    //get confirmation body
+    var confirmationBody = GetConfirmationBody();
+
+    confirmationDialogBox.appendChild(confirmationHeader);
+    confirmationDialogBox.appendChild(confirmationBody);
+}
+
+/**
+ * Return the confirmation header object that contains
+ * 1. Heading of the confirmation block
+ * 2. Close button whose function is controlled by ConfirmationCloseAction()
+ */
+function GetConfirmationHeader() {
+    var confirmationHeader = document.createElement("div");
+    confirmationHeader.classList.add("confirmation-header");
+
+    //confirmation block close button
+    var closeConfirmation = document.createElement("span");
+    closeConfirmation.classList.add("closeConfirmation");
+    closeConfirmation.innerHTML = "&times;";
+    closeConfirmation.onclick = ConfirmationCloseAction;
+    confirmationHeader.appendChild(closeConfirmation);
+
+    //Heading of the confirmation pop up
+    var confirmationHeading = document.createElement("h2");
+    confirmationHeading.innerHTML = "Please Confirm";
+    confirmationHeader.appendChild(confirmationHeading);
+
+    return confirmationHeader;
+}
+
+/**
+ * Returns the confirmation body object that contains
+ * 1. List of selected items
+ * 2. Action buttons
+ */
+function GetConfirmationBody() {
+    var confirmationBody = document.createElement("div");
+    confirmationBody.classList.add("confirmation-body");
+
+    var confirmationMessage = document.createElement("p");
+    totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
+    confirmationMessage.innerHTML = "You are about to checkout the below " + totalCheckoutItems + " item(s).";
+    confirmationBody.appendChild(confirmationMessage);
+
+    //add the items selected as an ordered list
+    var confirmationItemList = document.createElement("ol");
+
+    for (var i = 0; i < checkoutbooks.length; i++) {
+        var confirmBookLi = document.createElement("li");
+        var confirmBook = document.createTextNode(checkoutbooks[i]);
+        confirmBookLi.appendChild(confirmBook);
+        confirmationItemList.appendChild(confirmBookLi);
+    }
+
+    for (var i = 0; i < checkoutCDs.length; i++) {
+        var confirmCDLi = document.createElement("li");
+        var confirmCD = document.createTextNode(checkoutCDs[i]);
+        confirmCDLi.appendChild(confirmCD);
+        confirmationItemList.appendChild(confirmCDLi);
+    }
+    confirmationBody.appendChild(confirmationItemList);
+
+    //Add Yes and No buttons
+    var yesButton = document.createElement("button");
+    yesButton.classList.add("confirmation-button");
+    yesButton.innerHTML = "Yes";
+    yesButton.onclick = ConfirmationYesAction;
+    confirmationBody.appendChild(yesButton);
+
+    var noButton = document.createElement("button");
+    noButton.classList.add("confirmation-button");
+    noButton.innerHTML = "No";
+    noButton.onclick = ConfirmationNoAction;
+    confirmationBody.appendChild(noButton);
+
+    return confirmationBody;
+}
+
+/**
+ * Stores the actions required on closing the confirmation window. This includes
+ * 1. unhiding the checkout page, since the person may want to remove or add more items to cart
+ * 2. hide the confirmation block.
+ * 3. Remove content of confirmation block.
+ */
+function ConfirmationCloseAction() {
+    document.getElementById("checkoutPage").style.display = 'block';
+    document.getElementById("confirmation").style.display = "none";
+    document.getElementById("confirmationDialogBox").remove();
 
 }
 
-function DisplayDialog() {
-    var confirmationDialogBox = document.getElementById("confirmation");
+/**
+ * Stores the action items of Yes button on confirmation window. This includes
+ * 1. Hiding confirmation window and removing its contents to be reloaded later.
+ * 2. Deleting all the selected items from checkout lists.
+ * 3. Updating the effects of count change.
+ * 4. Updating the effects of checkout list change.
+ */
+function ConfirmationYesAction() {
+    document.getElementById("confirmation").style.display = "none";
+    document.getElementById("confirmationDialogBox").remove();
+    checkoutbooks = [];
+    checkoutCDs = [];
+    UpdateCheckoutIcon();
+    document.getElementById("checkoutDisplay").innerHTML = '';
+}
+
+/**
+ * Stores the action items of No nutton on confirmation window. This includes
+ * 1. Hiding confirmation window and removing its contents to be reloaded later.
+ * 2. Move back all the selected items from checkout list to available list
+ * 3. Updating the effects of count change.
+ * 4. Updating the effects of checkout list change.
+ */
+function ConfirmationNoAction() {
+    document.getElementById("confirmation").style.display = "none";
+    document.getElementById("confirmationDialogBox").remove();
+    for (var i = 0; i < checkoutCDs.length; i++) {
+        createContentElement(checkoutCDs[i], "DisplayedCDs");
+        console.log("Added back: ", checkoutCDs[i]);
+    }
+    checkoutCDs = [];
+    for (var i = 0; i < checkoutbooks.length; i++) {
+        createContentElement(checkoutbooks[i], "DisplayedBooks");
+        console.log("Added back: ", checkoutbooks[i]);
+    }
+    checkoutbooks = [];
+    UpdateCheckoutIcon();
+    document.getElementById("checkoutDisplay").innerHTML = '';
 }
