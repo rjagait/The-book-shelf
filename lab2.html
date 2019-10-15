@@ -11,39 +11,40 @@
 <body>
     <header>
         <userdetail id="userDetail"></userdetail>
-
-        <h1 id="heading">User Information</h1>
-
+        <h1 id="heading"></h1>
     </header>
 
-    <form action="/action_page.php" method="POST" id="UserDetails">
-        <div class="container">
-            <label for="name"><b>Username</b></label><br>
-            <input type="text" id="name" placeholder="Enter user name" name="name" maxlength="100" pattern='^[0-9a-zA-Z]*$' title="Max length of 100 is alowed" required><br>
+    <div class=loginForm id="UserDetails">
+        <form action="/action_page.php" method="POST">
+            <h1>Register</h1>
+            <div class="container">
+                <label for="name"><b>Username</b></label><br>
+                <input type="text" id="name" placeholder="Enter user name" name="name" maxlength="100" pattern='^[0-9a-zA-Z]*$' title="Max length of 100 is alowed" required><br>
 
-            <label for="email"><b>Email ID</b></label><br>
-            <input type="email" id="email" placeholder="Enter Email ID" name="email" title="Email expected" required><br>
+                <label for="email"><b>Email ID</b></label><br>
+                <input type="email" id="email" placeholder="Enter Email ID" name="email" title="Email expected" required><br>
 
-            <label for="birthyear"><b>Year of Birth</b></label><br>
-            <input type="number" id="birthyear" placeholder="Enter the year of birth" name="birthyear" min="1900" title="It should lie between 1900 and current year" required><br>
+                <label for="birthyear"><b>Year of Birth</b></label><br>
+                <input type="number" id="birthyear" placeholder="Enter the year of birth" name="birthyear" min="1900" title="It should lie between 1900 and current year" required><br>
 
-            <label for="psw"><b>Password</b></label><br>
-            <input type="password" placeholder="Enter Password" name="password" required><br>
+                <label for="psw"><b>Password</b></label><br>
+                <input type="password" placeholder="Enter Password" name="password" required><br>
 
-            <button type="button" onclick="UserInformation()">Login</button><br>
-            <label>
+                <button type="button" onclick="UserInformation()">Login</button><br>
+                <label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me<br>
             </label>
-        </div>
+            </div>
 
-        <div class="container" style="background-color: #f1f1f1">
-            <button type="button" class="cancelbtn"></button>
-            <span class="psw"> <a href="#">Forgot password?</a></span>
-            <span class="psw"><a href="#">Register</a> | </span>
+            <div class="container" style="background-color: #f1f1f1">
+                <button type="button" class="cancelbtn"></button>
+                <span class="psw"> <a href="#">Forgot password?</a></span>
+                <span class="psw"><a href="#">Register</a> | </span>
 
-        </div>
+            </div>
 
-    </form>
+        </form>
+    </div>
 
     <displayList hidden id="displayList">
         <div class="tab">

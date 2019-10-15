@@ -7,6 +7,8 @@ var CDs;
 var checkoutbooks = [];
 var checkoutCDs = [];
 var isAdmin = false;
+var bookDueIn = 30;
+var cdDueIn = 10;
 
 /**
  * Master function which does the below actions
@@ -18,22 +20,20 @@ function UserInformation() {
     console.log("Validation completed, confirming details with user");
     initialize();
 
-    valid = CheckIfValid();
+    valid = false;
+    if (username.value == "admin" && userbirthyear.value == 1867) {
+        isAdmin = true;
+        valid = true;
+    } else {
+        valid = CheckIfValid();
+    }
+
     if (valid) {
         console.log("Validation completed, confirming details with user");
-        AdminAccess();
         AddUserDetails();
         DisplayMainMenu();
     }
 
-}
-
-function AdminAccess() {
-    //check if admin
-    // if (username.value == "admin" && userbirthyear.value == 1867) {
-    if (username.value == "admin" && userbirthyear.value == 1867) {
-        isAdmin = true;
-    }
 }
 
 /**
@@ -100,11 +100,10 @@ function CheckIfValid() {
         alertMessage = alertMessage + "Expecting email, found " + useremail.value + ".\n";
     };
 
-    //jagair check admin year input
-    // if (userbirthyear.value < 1900 || userbirthyear.value > currentYear) {
-    //     console.log("Invalid Year");
-    //     alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
-    // };
+    if (userbirthyear.value < 1900 || userbirthyear.value > currentYear) {
+        console.log("Invalid Year");
+        alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
+    };
 
     if (alertMessage.length != 0) {
         alert("Invalid inputs please check:\n" + alertMessage);
@@ -153,7 +152,7 @@ function AddUserDetails() {
     }
 
     var logoutButton = document.createElement("button");
-    logoutButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
+    logoutButton.innerHTML = 'Logout';
     logoutButton.id = "checkoutButton";
     logoutButton.onclick = function() {
         //logout function jagair
@@ -176,6 +175,8 @@ function DisplayMainMenu() {
     if (isAdmin) {
         createAddNewContentElement("DisplayedBooks");
         createAddNewContentElement("DisplayedCDs");
+        AddUpdateDueDateOption("Books");
+        AddUpdateDueDateOption("CDs");
     }
 
     //Add books to available item list
@@ -190,6 +191,13 @@ function DisplayMainMenu() {
 
     //Add checkout cart details, will keep it hidden till the cart button is clicked
     CheckoutCartDetails();
+}
+
+function AddUpdateDueDateOption(tabcontent) {
+    var dueDate = document.getElementById(tabContent).firstChild;
+    var dueDateChangeInput = document.createElement("input");
+    dueDateChangeInput.innerHTML = "To change, add date here and click OK";
+    //jagair conplete the due date
 }
 
 /**
@@ -474,10 +482,10 @@ function UpdateCheckoutList(itemName, blockName) {
 
     var itemDetails = document.createElement("p");
     if (blockName == "DisplayedBooks") {
-        var due_in = "due in 30 days";
+        var due_in = "due in " + bookDueIn + " days";
         itemDetails.innerHTML = due_in.italics();
     } else {
-        var due_in = "due in 10 days";
+        var due_in = "due in " + cdDueIn + " days";
         itemDetails.innerHTML = due_in.italics();
     }
     checkoutDisplayElement.appendChild(itemDetails);
