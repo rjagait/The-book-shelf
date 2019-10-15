@@ -6,6 +6,7 @@ var books;
 var CDs;
 var checkoutbooks = [];
 var checkoutCDs = [];
+var isAdmin = false;
 
 /**
  * Master function which does the below actions
@@ -20,10 +21,19 @@ function UserInformation() {
     valid = CheckIfValid();
     if (valid) {
         console.log("Validation completed, confirming details with user");
+        AdminAccess();
         AddUserDetails();
         DisplayMainMenu();
     }
 
+}
+
+function AdminAccess() {
+    //check if admin
+    // if (username.value == "admin" && userbirthyear.value == 1867) {
+    if (username.value == "admin" && userbirthyear.value == 1867) {
+        isAdmin = true;
+    }
 }
 
 /**
@@ -90,10 +100,11 @@ function CheckIfValid() {
         alertMessage = alertMessage + "Expecting email, found " + useremail.value + ".\n";
     };
 
-    if (!isValidYear || userbirthyear.value > currentYear) {
-        console.log("Invalid Year");
-        alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
-    };
+    //jagair check admin year input
+    // if (userbirthyear.value < 1900 || userbirthyear.value > currentYear) {
+    //     console.log("Invalid Year");
+    //     alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
+    // };
 
     if (alertMessage.length != 0) {
         alert("Invalid inputs please check:\n" + alertMessage);
@@ -117,21 +128,37 @@ function AddUserDetails() {
     //confirming age group and formatting user details
     ageGroup = (currentYear - userbirthyear.value) > 18 ? "Adult" : "Child";
     console.log("Age Group recognized as " + ageGroup);
-    userDetailFormat = username.value + "(" + useremail.value + ") [" + ageGroup + "]";
+
+    if (isAdmin) {
+        userDetailFormat = "Librarian";
+    } else {
+        userDetailFormat = username.value + " (" + useremail.value + ") [" + ageGroup + "]";
+    }
+
     console.log("User Details: " + userDetailFormat);
 
     var userDetail = document.getElementById("userDetail");
     var displayUserDetails = document.createElement("P");
     displayUserDetails.innerHTML = userDetailFormat;
 
-    //Adding cart button
-    var cartButton = document.createElement("button");
-    cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
-    cartButton.id = "checkoutButton";
-    cartButton.onclick = function() {
-        document.getElementById("checkoutPage").style.display = 'block';
+    //Adding cart button if not admin
+    if (!isAdmin) {
+        var cartButton = document.createElement("button");
+        cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
+        cartButton.id = "checkoutButton";
+        cartButton.onclick = function() {
+            document.getElementById("checkoutPage").style.display = 'block';
+        }
+        displayUserDetails.appendChild(cartButton);
     }
-    displayUserDetails.appendChild(cartButton);
+
+    var logoutButton = document.createElement("button");
+    logoutButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
+    logoutButton.id = "checkoutButton";
+    logoutButton.onclick = function() {
+        //logout function jagair
+    }
+    displayUserDetails.appendChild(logoutButton);
 
     userDetail.appendChild(displayUserDetails);
 
@@ -145,6 +172,11 @@ function DisplayMainMenu() {
     //unhide main menu
     var displayList = document.getElementById("displayList");
     displayList.style.display = "block";
+
+    if (isAdmin) {
+        createAddNewContentElement("DisplayedBooks");
+        createAddNewContentElement("DisplayedCDs");
+    }
 
     //Add books to available item list
     for (i = 0; i < books.length; i++) {
@@ -180,6 +212,143 @@ function openTab(evt, tabName) {
 }
 
 /**
+ * Creates and adds the new add card to the respective block in main menu
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function createAddNewContentElement(blockName) {
+    var elementTitle = document.createElement("p");
+    elementTitle.classList.add("title");
+    elementTitle.innerHTML = "Use button below to add";
+
+    var elementContainer = document.createElement("div");
+    elementContainer.classList.add("container");
+    elementContainer.appendChild(elementTitle);
+
+    var elementButton = document.createElement("button");
+    elementButton.classList.add("button");
+    elementButton.innerHTML = "Add New";
+    elementButton.onclick = function() {
+        AddNewAvailableItem(blockName);
+    }
+    elementContainer.appendChild(elementButton);
+
+    //add images
+    var elementImage = document.createElement("img");
+    elementImage.src = "images/add_new.png";
+    elementImage.alt = "add_new";
+    elementImage.style = "width: 80%";
+
+    var elementCard = document.createElement("div");
+    elementCard.classList.add("card");
+    elementCard.appendChild(elementImage);
+    elementCard.appendChild(elementContainer);
+
+    var elementColumn = document.createElement("div");
+    elementColumn.classList.add("column");
+    elementColumn.id = "add_new_" + blockName;
+    elementColumn.appendChild(elementCard);
+
+    document.getElementById(blockName).appendChild(elementColumn);
+}
+
+/**
+ * DIalog box to get the input on the item name to be added
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function AddNewAvailableItem(blockName) {
+    var addNewScreen = document.getElementById("confirmation");
+    addNewScreen.style.display = "block";
+
+    //create content block to make stying the block easier
+    var addNewDialogBox = document.createElement("div");
+    addNewDialogBox.classList.add("dialogBox-content");
+    addNewDialogBox.id = "addNewDialogBox";
+    addNewScreen.appendChild(addNewDialogBox);
+
+    //get addNew header
+    var addNewHeader = GetaddNewHeader();
+
+    //get addNew body
+    var addNewBody = GetaddNewBody(blockName);
+
+    addNewDialogBox.appendChild(addNewHeader);
+    addNewDialogBox.appendChild(addNewBody);
+}
+
+/**
+ * Return the addNew header object that contains
+ * 1. Heading of the addNew block
+ * 2. Close button whose function is controlled by addNewCloseAction()
+ */
+function GetaddNewHeader() {
+    var addNewHeader = document.createElement("div");
+    addNewHeader.classList.add("confirmation-header");
+
+    //addNew block close button
+    var closeaddNew = document.createElement("span");
+    closeaddNew.classList.add("closeConfirmation");
+    closeaddNew.innerHTML = "&times;";
+    closeaddNew.onclick = addNewCloseAction;
+    addNewHeader.appendChild(closeaddNew);
+
+    //Heading of the addNew pop up
+    var addNewHeading = document.createElement("h2");
+    addNewHeading.innerHTML = "Add new item";
+    addNewHeader.appendChild(addNewHeading);
+
+    return addNewHeader;
+}
+
+/**
+ * Returns the addNew body object that contains
+ * 1. Gets the item name from admin
+ * 2. add item name to the available item list with default image
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function GetaddNewBody(blockName) {
+    var addNewBody = document.createElement("div");
+    addNewBody.classList.add("confirmation-body");
+
+    var addNewMessage = document.createElement("p");
+    totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
+    addNewMessage.innerHTML = "Please enter the item name you want to add and press enter key";
+    addNewBody.appendChild(addNewMessage);
+
+    var addNewInput = document.createElement("input");
+    addNewInput.id = "addNewItemName";
+    addNewBody.appendChild(addNewInput);
+
+    //Add Yes and No buttons
+    var yesButton = document.createElement("button");
+    yesButton.classList.add("confirmation-button");
+    yesButton.innerHTML = "Enter";
+    yesButton.onclick = function() {
+        addNewYesAction(blockName);
+    }
+    addNewBody.appendChild(yesButton);
+
+    return addNewBody;
+}
+
+/**
+ * Closes the dialog box and enables the background
+ */
+function addNewCloseAction() {
+    document.getElementById("confirmation").style.display = "none";
+    document.getElementById("addNewDialogBox").remove();
+}
+
+/**
+ * defines the add button action items in New Item block
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function addNewYesAction(blockName) {
+    var itemName = document.getElementById("addNewItemName").value;
+    createContentElement(itemName, blockName);
+    addNewCloseAction();
+}
+
+/**
  * Creates and adds the card to the respective block in main menu
  * @param {*} itemName Name of the book to be added to the list
  * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
@@ -189,22 +358,36 @@ function createContentElement(itemName, blockName) {
     elementTitle.classList.add("title");
     elementTitle.innerHTML = itemName;
 
-    //add and remove buttons for all cards
-    var elementButton = document.createElement("button");
-    elementButton.classList.add("button");
-    elementButton.innerHTML = "Add";
-    elementButton.onclick = function() {
-        AddToCheckout(itemName, blockName);
-    }
-
     var elementContainer = document.createElement("div");
     elementContainer.classList.add("container");
     elementContainer.appendChild(elementTitle);
-    elementContainer.appendChild(elementButton);
+
+    //add and remove buttons for all cards
+    if (isAdmin) {
+        var elementRemoveButton = document.createElement("button");
+        elementRemoveButton.classList.add("button");
+        elementRemoveButton.innerHTML = "Remove";
+        elementRemoveButton.onclick = function() {
+            RemoveFromAvailable(itemName, blockName);
+        }
+        elementContainer.appendChild(elementRemoveButton);
+    } else {
+        var elementButton = document.createElement("button");
+        elementButton.classList.add("button");
+        elementButton.innerHTML = "Add";
+        elementButton.onclick = function() {
+            AddToCheckout(itemName, blockName);
+        }
+        elementContainer.appendChild(elementButton);
+    }
 
     //add images
     var elementImage = document.createElement("img");
-    elementImage.src = "images/" + itemName + ".jpg";
+    if (books.includes(itemName) || CDs.includes(itemName)) {
+        elementImage.src = "images/" + itemName + ".jpg";
+    } else {
+        elementImage.src = "images/default.jpg";
+    }
     elementImage.alt = itemName;
     elementImage.style = "width: 80%";
 
@@ -243,6 +426,17 @@ function AddToCheckout(itemName, blockName) {
     UpdateCheckoutList(itemName, blockName);
 
     console.log("Checkout Items: " + checkoutCDs.length + checkoutbooks.length);
+}
+
+/**
+ * Removes the added item from available item list
+ */
+function RemoveFromAvailable(itemName, blockName) {
+    console.log("This function will remove the item from available " + itemName + blockName);
+
+    //remove element from available item list
+    var elementToRemove = document.getElementById(itemName);
+    elementToRemove.remove();
 }
 
 /**
@@ -378,7 +572,7 @@ function DisplayDialog() {
 
     //create content block to make stying the block easier
     var confirmationDialogBox = document.createElement("div");
-    confirmationDialogBox.classList.add("confirmation-content");
+    confirmationDialogBox.classList.add("dialogBox-content");
     confirmationDialogBox.id = "confirmationDialogBox";
     confirmationScreen.appendChild(confirmationDialogBox);
 

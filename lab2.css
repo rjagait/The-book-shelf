@@ -146,6 +146,7 @@ span.psw {
     text-align: center;
     cursor: pointer;
     width: 100%;
+    border: 1px solid white;
 }
 
 .button:hover {
@@ -232,7 +233,7 @@ confirmation {
     /* Black w/ opacity */
 }
 
-.confirmation-content {
+.dialogBox-content {
     position: relative;
     background-color: #fefefe;
     margin: auto;
