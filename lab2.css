@@ -17,7 +17,6 @@ body {
     left: 16px;
     color: red;
     text-shadow: 0.5px 0.5px gray;
-    /* -shadow: 0 1px 1px 0 white; */
 }
 
 
@@ -28,9 +27,7 @@ userdetail {
 }
 
 header {
-    /* The image used */
     background-image: url("images/header\ books.png");
-    /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -38,10 +35,8 @@ header {
 }
 
 .loginForm {
-    /* The image used */
     background-image: url("images/background\ books.jpg");
     min-height: 580px;
-    /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -251,25 +246,16 @@ ul li:hover {
 
 confirmation {
     display: none;
-    /* Hidden by default */
     position: fixed;
-    /* Stay in place */
     z-index: 1;
-    /* Sit on top */
     padding-top: 100px;
-    /* Location of the box */
     left: 0;
     top: 0;
     width: 100%;
-    /* Full width */
     height: 100%;
-    /* Full height */
     overflow: auto;
-    /* Enable scroll if needed */
     background-color: rgb(0, 0, 0);
-    /* Fallback color */
     background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
 }
 
 .dialogBox-content {
@@ -352,15 +338,12 @@ confirmation {
 
 .notifButton {
     background-color: rgb(0, 0, 0, 0.2);
-    /* color: white; */
     text-decoration: none;
     padding: 10px 15px;
     position: relative;
     display: inline-block;
     border: none;
-    /* border-radius: 2px; */
     color: white;
-    /* opacity: 0.5; */
 }
 
 .notifButton:hover {
