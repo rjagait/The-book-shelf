@@ -1,14 +1,24 @@
+//User inputs
 var username;
 var useremail;
 var userbirthyear;
 var currentYear;
+
+//Item lists
 var books;
 var CDs;
+var availableBooks = [];
+var availableCDs = [];
 var checkoutbooks = [];
 var checkoutCDs = [];
-var isAdmin = false;
+
+//Due dates
 var bookDueIn = 30;
 var cdDueIn = 10;
+
+//Flags used
+var isAdmin = false;
+var isReload = false;
 
 /**
  * Master function which does the below actions
@@ -17,7 +27,11 @@ var cdDueIn = 10;
  * 3. Confirm with user if details are correct
  */
 function UserInformation() {
-    console.log("Validation completed, confirming details with user");
+    if (currentYear != undefined) {
+        isReload = true;
+    }
+
+    console.log("Available list on loaded is: " + availableBooks);
     initialize();
 
     valid = false;
@@ -25,11 +39,12 @@ function UserInformation() {
         isAdmin = true;
         valid = true;
     } else {
+        isAdmin = false;
         valid = CheckIfValid();
     }
 
     if (valid) {
-        console.log("Validation completed, confirming details with user");
+        console.log("Validation completed!");
         AddUserDetails();
         DisplayMainMenu();
     }
@@ -46,6 +61,10 @@ function initialize() {
     userbirthyear = document.getElementById('birthyear');
     console.log("Inputs Read.", username.value, useremail.value, userbirthyear.value);
 
+    if (isReload) {
+        return;
+    }
+
     currentYear = new Date().getFullYear();
     console.log("Current working year is " + currentYear);
 
@@ -61,6 +80,8 @@ function initialize() {
         "The Lion, the Witch and the Wardrobe",
         "She, A History of Adventure",
     ];
+    for (var i = 0; i < books.length; i++)
+        availableBooks.push(books[i]);
     CDs = [
         "Going Seventeen",
         "The Brown Band",
@@ -73,6 +94,8 @@ function initialize() {
         "Mama - by EXO",
         "21 - by Adele",
     ];
+    for (var i = 0; i < CDs.length; i++)
+        availableCDs.push(CDs[i]);
 }
 
 /**
@@ -119,10 +142,12 @@ function CheckIfValid() {
  */
 function AddUserDetails() {
     var userDetails = document.getElementById("UserDetails");
-    userDetails.remove();
+    userDetails.style.display = 'none';
+
+    document.getElementById("header").style.display = 'block';
 
     var heading = document.getElementById("heading");
-    heading.innerHTML = "Main Menu"
+    heading.innerHTML = "The &#127809; Shelf"
 
     //confirming age group and formatting user details
     ageGroup = (currentYear - userbirthyear.value) > 18 ? "Adult" : "Child";
@@ -139,28 +164,72 @@ function AddUserDetails() {
     var userDetail = document.getElementById("userDetail");
     var displayUserDetails = document.createElement("P");
     displayUserDetails.innerHTML = userDetailFormat;
+    displayUserDetails.id = "displayUserDetails";
+    displayUserDetails.style.color = 'white';
 
     //Adding cart button if not admin
     if (!isAdmin) {
+        var spanNotif = document.createElement("span");
+        spanNotif.innerHTML = '0';
+        spanNotif.id = 'checkoutCountNotif';
+        spanNotif.style.display = 'none';
+        spanNotif.classList.add("notif");
         var cartButton = document.createElement("button");
-        cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>0';
+        cartButton.innerHTML = '&#128722; Cart';
         cartButton.id = "checkoutButton";
+        cartButton.classList.add("notifButton");
         cartButton.onclick = function() {
             document.getElementById("checkoutPage").style.display = 'block';
         }
+        cartButton.appendChild(spanNotif);
         displayUserDetails.appendChild(cartButton);
     }
 
     var logoutButton = document.createElement("button");
     logoutButton.innerHTML = 'Logout';
     logoutButton.id = "checkoutButton";
+    logoutButton.classList.add("notifButton")
     logoutButton.onclick = function() {
-        //logout function jagair
+        LogoutBackToLogin()
     }
     displayUserDetails.appendChild(logoutButton);
 
     userDetail.appendChild(displayUserDetails);
+}
 
+/**
+ * Changes required to logout
+ * Shifting from the available list + checkout page to login page
+ */
+function LogoutBackToLogin() {
+    //For new user start fresh checkout
+    checkoutbooks = [];
+    checkoutCDs = [];
+    UpdateCheckoutIcon();
+    document.getElementById("checkoutDisplay").innerHTML = '';
+    document.getElementById("displayUserDetails").remove();
+
+    //remove admin specific changes
+    if (isAdmin) {
+        console.log("Removing admin specific items");
+        document.getElementById("add_new_DisplayedBooks").remove();
+        document.getElementById("add_new_DisplayedCDs").remove();
+        document.getElementById("containerBookDueBlock").remove();
+        document.getElementById("containerCDDueBlock").remove();
+    }
+
+    //shift to login page
+    document.getElementById("header").style.display = 'none';
+    document.getElementById("displayList").style.display = 'none';
+    document.getElementById("userDetailForm").reset();
+    document.getElementById("UserDetails").style.display = 'block';
+    document.getElementById("checkoutPage").innerHTML = '';
+
+    //remove all book and CD cards
+    for (var i = 0; i < availableBooks.length; i++)
+        document.getElementById(availableBooks[i]).remove();
+    for (var i = 0; i < availableCDs.length; i++)
+        document.getElementById(availableCDs[i]).remove();
 }
 
 /**
@@ -175,29 +244,51 @@ function DisplayMainMenu() {
     if (isAdmin) {
         createAddNewContentElement("DisplayedBooks");
         createAddNewContentElement("DisplayedCDs");
-        AddUpdateDueDateOption("Books");
-        AddUpdateDueDateOption("CDs");
+        AddUpdateDueDateOption("BookDueBlock");
+        AddUpdateDueDateOption("CDDueBlock");
     }
 
     //Add books to available item list
-    for (i = 0; i < books.length; i++) {
-        createContentElement(books[i], "DisplayedBooks");
+    for (i = 0; i < availableBooks.length; i++) {
+        createContentElement(availableBooks[i], "DisplayedBooks");
     }
 
     //Add CDs to available item list
-    for (i = 0; i < CDs.length; i++) {
-        createContentElement(CDs[i], "DisplayedCDs");
+    for (i = 0; i < availableCDs.length; i++) {
+        createContentElement(availableCDs[i], "DisplayedCDs");
     }
 
     //Add checkout cart details, will keep it hidden till the cart button is clicked
     CheckoutCartDetails();
 }
 
-function AddUpdateDueDateOption(tabcontent) {
-    var dueDate = document.getElementById(tabContent).firstChild;
+function AddUpdateDueDateOption(itemDueDate) {
+    var dueDateChangeContainer = document.createElement("div");
+
     var dueDateChangeInput = document.createElement("input");
-    dueDateChangeInput.innerHTML = "To change, add date here and click OK";
-    //jagair conplete the due date
+    dueDateChangeInput.placeholder = "Add new due date in days";
+    dueDateChangeContainer.appendChild(dueDateChangeInput);
+
+    var updateDueDateButton = document.createElement("button");
+    updateDueDateButton.classList.add("button");
+    updateDueDateButton.style.width = "auto";
+    updateDueDateButton.innerHTML = "Update";
+    updateDueDateButton.onclick = function() {
+        console.log("Update due date to: " + dueDateChangeInput.value);
+
+        if (itemDueDate == "BookDueBlock") {
+            bookDueIn = dueDateChangeInput.value;
+            document.getElementById('BookDueDate').innerHTML = "Books are due in " + bookDueIn + "days";
+            console.log("Update Book due date to: " + dueDateChangeInput.value);
+        } else {
+            cdDueIn = dueDateChangeInput.value;
+            document.getElementById('CDDueDate').innerHTML = "CDs are due in " + bookDueIn + "days";
+            console.log("Update CD due date to: " + dueDateChangeInput.value);
+        }
+    }
+    dueDateChangeContainer.appendChild(updateDueDateButton);
+    dueDateChangeContainer.id = "container" + itemDueDate;
+    document.getElementById(itemDueDate).appendChild(dueDateChangeContainer);
 }
 
 /**
@@ -242,7 +333,7 @@ function createAddNewContentElement(blockName) {
 
     //add images
     var elementImage = document.createElement("img");
-    elementImage.src = "images/add_new.png";
+    elementImage.src = "images/add_new.jpg";
     elementImage.alt = "add_new";
     elementImage.style = "width: 80%";
 
@@ -327,13 +418,13 @@ function GetaddNewBody(blockName) {
     addNewBody.appendChild(addNewInput);
 
     //Add Yes and No buttons
-    var yesButton = document.createElement("button");
-    yesButton.classList.add("confirmation-button");
-    yesButton.innerHTML = "Enter";
-    yesButton.onclick = function() {
+    var enterButton = document.createElement("button");
+    enterButton.classList.add("confirmation-button");
+    enterButton.innerHTML = "Enter";
+    enterButton.onclick = function() {
         addNewYesAction(blockName);
     }
-    addNewBody.appendChild(yesButton);
+    addNewBody.appendChild(enterButton);
 
     return addNewBody;
 }
@@ -352,6 +443,8 @@ function addNewCloseAction() {
  */
 function addNewYesAction(blockName) {
     var itemName = document.getElementById("addNewItemName").value;
+
+    AvailableListAdd(itemName, blockName);
     createContentElement(itemName, blockName);
     addNewCloseAction();
 }
@@ -371,23 +464,20 @@ function createContentElement(itemName, blockName) {
     elementContainer.appendChild(elementTitle);
 
     //add and remove buttons for all cards
+    var elementButton = document.createElement("button");
+    elementButton.classList.add("elementbutton");
     if (isAdmin) {
-        var elementRemoveButton = document.createElement("button");
-        elementRemoveButton.classList.add("button");
-        elementRemoveButton.innerHTML = "Remove";
-        elementRemoveButton.onclick = function() {
+        elementButton.innerHTML = "Remove";
+        elementButton.onclick = function() {
             RemoveFromAvailable(itemName, blockName);
         }
-        elementContainer.appendChild(elementRemoveButton);
     } else {
-        var elementButton = document.createElement("button");
-        elementButton.classList.add("button");
         elementButton.innerHTML = "Add";
         elementButton.onclick = function() {
             AddToCheckout(itemName, blockName);
         }
-        elementContainer.appendChild(elementButton);
     }
+    elementContainer.appendChild(elementButton);
 
     //add images
     var elementImage = document.createElement("img");
@@ -417,18 +507,20 @@ function createContentElement(itemName, blockName) {
  * Also, removes the added item from available item list
  */
 function AddToCheckout(itemName, blockName) {
-    console.log("This function will remove the button and add it to checkout" + itemName + blockName);
+    console.log("This function will remove the '" + itemName + "' button from '" + blockName + "' and add it to checkout");
 
-    //remove element from available item list
+    //remove element from available display list
     var elementToRemove = document.getElementById(itemName);
     elementToRemove.remove();
 
+    //add item to checkout list
     if (blockName == "DisplayedBooks") {
         checkoutbooks.push(itemName);
     } else {
         checkoutCDs.push(itemName);
     }
 
+    AvailableListRemove(itemName, blockName);
     //update on add to cart selection
     UpdateCheckoutIcon();
     UpdateCheckoutList(itemName, blockName);
@@ -442,7 +534,10 @@ function AddToCheckout(itemName, blockName) {
 function RemoveFromAvailable(itemName, blockName) {
     console.log("This function will remove the item from available " + itemName + blockName);
 
-    //remove element from available item list
+    //remove item from available list array
+    AvailableListRemove(itemName, blockName);
+
+    //remove element from available display list
     var elementToRemove = document.getElementById(itemName);
     elementToRemove.remove();
 }
@@ -454,8 +549,14 @@ function UpdateCheckoutIcon() {
     var totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
 
     //update the checkout notification count
-    var cartButton = document.getElementById("checkoutButton");
-    cartButton.innerHTML = '<img src="images/cart_icon.svg" alt="looking" width=20>' + totalCheckoutItems;
+    var cartButton = document.getElementById("checkoutCountNotif");
+    if (cartButton != null) {
+        cartButton.innerHTML = totalCheckoutItems;
+        if (totalCheckoutItems > 0)
+            cartButton.style.display = 'block';
+        else
+            cartButton.style.display = 'none';
+    }
 
     //update the count in checout cart
     var cartHeading = document.getElementById("checkoutCartHeading");
@@ -464,6 +565,7 @@ function UpdateCheckoutIcon() {
     //Enable the 'checkout' button on checkout cart only if count is non-zero.
     if (totalCheckoutItems > 0) {
         document.getElementById("checkoutCartButton").disabled = false;
+
     } else {
         document.getElementById("checkoutCartButton").disabled = true;
     }
@@ -490,9 +592,9 @@ function UpdateCheckoutList(itemName, blockName) {
     }
     checkoutDisplayElement.appendChild(itemDetails);
 
-    var closeButton = document.createElement("button");
-    closeButton.innerHTML = "Remove";
-    closeButton.onclick = function() {
+    var removeButton = document.createElement("button");
+    removeButton.innerHTML = "Remove";
+    removeButton.onclick = function() {
         /**
          * Actions:
          * 1. remove item from checkout list on checkout page and the checkout variables
@@ -500,11 +602,12 @@ function UpdateCheckoutList(itemName, blockName) {
          */
         this.parentElement.style.display = 'none';
         createContentElement(itemName, blockName);
+        AvailableListAdd(itemName, blockName);
         RemoveItemFromCheckoutListArray(itemName, blockName);
         UpdateCheckoutIcon();
     }
-    closeButton.classList.add("close");
-    checkoutDisplayElement.appendChild(closeButton);
+    removeButton.classList.add("close");
+    checkoutDisplayElement.appendChild(removeButton);
 
     document.getElementById("checkoutDisplay").appendChild(checkoutDisplayElement);
 }
@@ -535,11 +638,25 @@ function RemoveItemFromCheckoutListArray(itemName, blockName) {
  * for all the 'add to cart' items, they will be updated when they are selected.
  */
 function CheckoutCartDetails() {
-
     var checkoutPage = document.getElementById("checkoutPage");
+
+    var checkoutButton = document.createElement("button");
+    checkoutButton.innerHTML = "Checkout";
+    checkoutButton.id = "checkoutCartButton";
+    checkoutButton.disabled = true;
+
+    checkoutButton.style.cssFloat = 'right';
+    checkoutButton.classList.add("notifButton"); //change color to green
+    checkoutButton.style.backgroundColor = 'green';
+    checkoutButton.onclick = function() {
+        DisplayDialog();
+    }
+    checkoutPage.appendChild(checkoutButton);
 
     var checkoutWindowCloseButton = document.createElement("button");
     checkoutWindowCloseButton.innerHTML = "Close";
+    checkoutWindowCloseButton.style.cssFloat = 'right';
+    checkoutWindowCloseButton.classList.add("notifButton");
     checkoutWindowCloseButton.onclick = function() {
         checkoutPage.style.display = "none";
     }
@@ -555,15 +672,6 @@ function CheckoutCartDetails() {
     var checkoutDisplay = document.createElement("ul");
     checkoutDisplay.id = "checkoutDisplay";
     checkoutPage.appendChild(checkoutDisplay);
-
-    var checkoutButton = document.createElement("button");
-    checkoutButton.innerHTML = "Checkout";
-    checkoutButton.id = "checkoutCartButton";
-    checkoutButton.disabled = true;
-    checkoutButton.onclick = function() {
-        DisplayDialog();
-    }
-    checkoutPage.appendChild(checkoutButton);
 }
 
 /**
@@ -707,14 +815,48 @@ function ConfirmationNoAction() {
     document.getElementById("confirmationDialogBox").remove();
     for (var i = 0; i < checkoutCDs.length; i++) {
         createContentElement(checkoutCDs[i], "DisplayedCDs");
+        AvailableListAdd(checkoutCDs[i], "DisplayedCDs");
         console.log("Added back: ", checkoutCDs[i]);
     }
     checkoutCDs = [];
     for (var i = 0; i < checkoutbooks.length; i++) {
         createContentElement(checkoutbooks[i], "DisplayedBooks");
+        AvailableListAdd(checkoutbooks[i], "DisplayedBooks");
         console.log("Added back: ", checkoutbooks[i]);
     }
     checkoutbooks = [];
     UpdateCheckoutIcon();
     document.getElementById("checkoutDisplay").innerHTML = '';
+}
+
+/**
+ * Add item to respective available list
+ * @param {*} itemName Name of the book to be added to the list
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function AvailableListAdd(itemName, blockName) {
+    if (blockName == "DisplayedBooks") {
+        availableBooks.push(itemName);
+    } else {
+        availableCDs.push(itemName);
+    }
+}
+
+/**
+ * Remove item from respective available list
+ * @param {*} itemName Name of the book to be added to the list
+ * @param {*} blockName for CD -> DisplayedCDs, for Books -> DisplayedBooks
+ */
+function AvailableListRemove(itemName, blockName) {
+    if (blockName == "DisplayedBooks") {
+        var index = availableBooks.indexOf(itemName);
+        if (index > -1) {
+            availableBooks.splice(index, 1);
+        }
+    } else if (blockName == "DisplayedCDs") {
+        var index = availableCDs.indexOf(itemName);
+        if (index > -1) {
+            availableCDs.splice(index, 1);
+        }
+    }
 }

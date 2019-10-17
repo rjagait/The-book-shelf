@@ -9,17 +9,13 @@
 </head>
 
 <body>
-    <header>
-        <userdetail id="userDetail"></userdetail>
-        <h1 id="heading"></h1>
-    </header>
-
     <div class=loginForm id="UserDetails">
-        <form action="/action_page.php" method="POST">
-            <h1>Register</h1>
+        <h1 class=company>The &#127809; Shelf</h1>
+        <form id="userDetailForm" action="/action_page.php" method="POST">
+            <h2>REGISTER</h2>
             <div class="container">
                 <label for="name"><b>Username</b></label><br>
-                <input type="text" id="name" placeholder="Enter user name" name="name" maxlength="100" pattern='^[0-9a-zA-Z]*$' title="Max length of 100 is alowed" required><br>
+                <input type="text" id="name" placeholder="Enter user name" name="name" maxlength="100" title="Max length of 100 is alowed" pattern='^[0-9a-zA-Z]*$' required><br>
 
                 <label for="email"><b>Email ID</b></label><br>
                 <input type="email" id="email" placeholder="Enter Email ID" name="email" title="Email expected" required><br>
@@ -46,6 +42,11 @@
         </form>
     </div>
 
+    <header hidden id=header>
+        <userdetail id="userDetail"></userdetail>
+        <h1 id="heading"> The &#127809; Shelf</h1>
+    </header>
+
     <displayList hidden id="displayList">
         <div class="tab">
             <button class="tablinks" onclick="openTab(event, 'Books')">&#x1F4D6; Books</button>
@@ -53,13 +54,17 @@
         </div>
 
         <div id="Books" class="tabcontent">
-            <p>Books are due in 30days.</p>
+            <div id="BookDueBlock" class="tabcontentcard">
+                <p id="BookDueDate">Books are due in 30days.</p>
+            </div>
             <div id="DisplayedBooks" class="row">
             </div>
         </div>
 
         <div hidden id="CDs" class="tabcontent">
-            <p>CDs are due in 10days.</p>
+            <div id="CDDueBlock" class="tabcontentcard">
+                <p id="CDDueDate">CDs are due in 10days.</p>
+            </div>
             <div id="DisplayedCDs" class="row">
             </div>
         </div>
