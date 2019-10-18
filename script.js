@@ -35,7 +35,7 @@ function UserInformation() {
     console.log("Available list on loaded is: " + availableBooks);
     initialize();
 
-    valid = false;
+    var valid = false;
     if (username.value == "admin" && userbirthyear.value == 1867) {
         isAdmin = true;
         valid = true;
@@ -109,9 +109,8 @@ function initialize() {
  */
 function CheckIfValid() {
     console.log("Checking if email and year are valid");
-    isValidEmail = useremail.checkValidity();
-    isValidYear = userbirthyear.checkValidity();
-    isValidName = username.checkValidity();
+    var isValidEmail = useremail.checkValidity();
+    var isValidName = username.checkValidity();
     var alertMessage = "";
 
     if (!isValidName) {
@@ -122,12 +121,12 @@ function CheckIfValid() {
     if (!isValidEmail) {
         console.log("Invalid Email");
         alertMessage = alertMessage + "Expecting email, found " + useremail.value + ".\n";
-    };
+    }
 
     if (userbirthyear.value < 1900 || userbirthyear.value > currentYear) {
         console.log("Invalid Year");
         alertMessage = alertMessage + "Expecting year to lie in the range of 1900 to " + currentYear + ".\n";
-    };
+    }
 
     if (alertMessage.length != 0) {
         alert("Invalid inputs please check:\n" + alertMessage);
@@ -148,12 +147,13 @@ function AddUserDetails() {
     document.getElementById("header").style.display = 'block';
 
     var heading = document.getElementById("heading");
-    heading.innerHTML = "The &#127809; Shelf"
+    heading.innerHTML = "The &#127809; Shelf";
 
     //confirming age group and formatting user details
-    ageGroup = (currentYear - userbirthyear.value) > 18 ? "Adult" : "Child";
+    var ageGroup = (currentYear - userbirthyear.value) > 18 ? "Adult" : "Child";
     console.log("Age Group recognized as " + ageGroup);
 
+    var userDetailFormat = "";
     if (isAdmin) {
         userDetailFormat = "Librarian";
     } else {
@@ -181,7 +181,7 @@ function AddUserDetails() {
         cartButton.classList.add("notifButton");
         cartButton.onclick = function() {
             document.getElementById("checkoutPage").style.display = 'block';
-        }
+        };
         cartButton.appendChild(spanNotif);
         displayUserDetails.appendChild(cartButton);
     }
@@ -190,10 +190,10 @@ function AddUserDetails() {
     var logoutButton = document.createElement("button");
     logoutButton.innerHTML = 'Logout';
     logoutButton.id = "checkoutButton";
-    logoutButton.classList.add("notifButton")
+    logoutButton.classList.add("notifButton");
     logoutButton.onclick = function() {
-        LogoutBackToLogin()
-    }
+        LogoutBackToLogin();
+    };
     displayUserDetails.appendChild(logoutButton);
 
     if (!isAdmin) {
@@ -239,7 +239,7 @@ function ChangeToEnglish() {
         return;
 
     var titles = document.getElementsByClassName("title");
-    for (i = 0; i < titles.length; i++) {
+    for (var i = 0; i < titles.length; i++) {
         titles[i].innerHTML = titles[i].parentNode.parentNode.parentNode.id;
     }
     isEnglish = true;
@@ -254,7 +254,7 @@ function ChangeToFrench() {
         return;
 
     var titles = document.getElementsByClassName("title");
-    for (i = 0; i < titles.length; i++) {
+    for (var i = 0; i < titles.length; i++) {
         var itemID = titles[i].parentNode.parentNode.parentNode.id;
         titles[i].innerHTML = GetFrenchName(itemID);
     }
@@ -271,67 +271,47 @@ function GetFrenchName(itemName) {
     switch (itemName) {
         //Books
         case "A Tale of Two Cities":
-             return  "Un conte de deux villes";
-            break;
+            return "Un conte de deux villes";
         case "The Lord of the Rings":
-             return  "Le Seigneur des Anneaux";
-            break;
+            return "Le Seigneur des Anneaux";
         case "The Little Prince":
-             return  "Le petit Prince";
-            break;
+            return "Le petit Prince";
         case "Harry Potter and the Philosopher's Stone":
-             return  "Harry Potter et la pierre philosophale";
-            break;
+            return "Harry Potter et la pierre philosophale";
         case "The Hobbit":
-             return  "Le Hobbit";
-            break;
+            return "Le Hobbit";
         case "Alice's Adventures in Wonderland":
-             return  "Les aventures d'Alice au Pays des Merveilles";
-            break;
+            return "Les aventures d'Alice au Pays des Merveilles";
         case "Dream of the Red Chamber":
-             return  "Rêve de la chambre rouge";
-            break;
+            return "Rêve de la chambre rouge";
         case "And Then There Were None":
-             return  "Et puis il n'y en avait pas";
-            break;
+            return "Et puis il n'y en avait pas";
         case "The Lion, the Witch and the Wardrobe":
-             return  "Le Lion, la Sorcière et l'Armoire";
-            break;
+            return "Le Lion, la Sorcière et l'Armoire";
         case "She, A History of Adventure":
-             return  "Elle, une histoire d'aventure";
-            break;
+            return "Elle, une histoire d'aventure";
 
             //CDs
         case "Going Seventeen":
-             return  "En allant dix-sept";
-            break;
+            return "En allant dix-sept";
         case "The Brown Band":
-             return  "La bande brune";
-            break;
+            return "La bande brune";
         case "The Ultimate Collection":
-             return  "La collection ultime";
-            break;
+            return "La collection ultime";
         case "Clapton Chronicles, The Best of Eric Clapton":
-             return  "Clapton Chronicles, le meilleur d'Eric Clapton";
-            break;
+            return "Clapton Chronicles, le meilleur d'Eric Clapton";
         case "50 Number Ones":
-             return  "50 Nombre";
-            break;
+            return "50 Nombre";
         case "19 - by Adele":
-             return  "19 - de Adele";
-            break;
+            return "19 - de Adele";
         case "Now That’s What I Call Music! 92":
-             return  "C’est ce que j’appelle la musique! 92";
-            break;
+            return "C’est ce que j’appelle la musique! 92";
         case "April, and a Flower":
-             return  "Avril et une fleur";
-            break;
+            return "Avril et une fleur";
         case "Mama - by EXO":
-             return  "Mama - par EXO";
-            break;
+            return "Mama - par EXO";
         case "21 - by Adele":
-             return  "21 - de Adele";
-            break;
+            return "21 - de Adele";
 
             //If not add (*) that french version not available
         default:
@@ -390,6 +370,7 @@ function DisplayMainMenu() {
         AddUpdateDueDateOption("CDDueBlock");
     }
 
+    var i;
     //Add books to available item list
     for (i = 0; i < availableBooks.length; i++) {
         createContentElement(availableBooks[i], "DisplayedBooks");
@@ -427,7 +408,7 @@ function AddUpdateDueDateOption(itemDueDate) {
             document.getElementById('CDDueDate').innerHTML = "CDs are due in " + bookDueIn + "days";
             console.log("Update CD due date to: " + dueDateChangeInput.value);
         }
-    }
+    };
     dueDateChangeContainer.appendChild(updateDueDateButton);
     dueDateChangeContainer.id = "container" + itemDueDate;
     document.getElementById(itemDueDate).appendChild(dueDateChangeContainer);
@@ -470,7 +451,7 @@ function createAddNewContentElement(blockName) {
     elementButton.innerHTML = "Add New";
     elementButton.onclick = function() {
         AddNewAvailableItem(blockName);
-    }
+    };
     elementContainer.appendChild(elementButton);
 
     //add images
@@ -551,7 +532,6 @@ function GetaddNewBody(blockName) {
     addNewBody.classList.add("confirmation-body");
 
     var addNewMessage = document.createElement("p");
-    totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
     addNewMessage.innerHTML = "Please enter the item name you want to add and press enter key";
     addNewBody.appendChild(addNewMessage);
 
@@ -565,7 +545,7 @@ function GetaddNewBody(blockName) {
     enterButton.innerHTML = "Enter";
     enterButton.onclick = function() {
         addNewYesAction(blockName);
-    }
+    };
     addNewBody.appendChild(enterButton);
 
     return addNewBody;
@@ -615,12 +595,12 @@ function createContentElement(itemName, blockName) {
         elementButton.innerHTML = "Remove";
         elementButton.onclick = function() {
             RemoveFromAvailable(itemName, blockName);
-        }
+        };
     } else {
         elementButton.innerHTML = "Add";
         elementButton.onclick = function() {
             AddToCheckout(itemName, blockName);
-        }
+        };
     }
     elementContainer.appendChild(elementButton);
 
@@ -732,7 +712,7 @@ function UpdateCheckoutList(itemName, blockName) {
         var due_in = "due in " + bookDueIn + " days";
         itemDetails.innerHTML = due_in.italics();
     } else {
-        var due_in = "due in " + cdDueIn + " days";
+        due_in = "due in " + cdDueIn + " days";
         itemDetails.innerHTML = due_in.italics();
     }
     checkoutDisplayElement.appendChild(itemDetails);
@@ -750,7 +730,7 @@ function UpdateCheckoutList(itemName, blockName) {
         AvailableListAdd(itemName, blockName);
         RemoveItemFromCheckoutListArray(itemName, blockName);
         UpdateCheckoutIcon();
-    }
+    };
     removeButton.classList.add("close");
     checkoutDisplayElement.appendChild(removeButton);
 
@@ -771,7 +751,7 @@ function RemoveItemFromCheckoutListArray(itemName, blockName) {
             checkoutbooks.splice(index, 1);
         }
     } else if (blockName == "DisplayedCDs") {
-        var index = checkoutCDs.indexOf(itemName);
+        index = checkoutCDs.indexOf(itemName);
         if (index > -1) {
             checkoutCDs.splice(index, 1);
         }
@@ -795,7 +775,7 @@ function CheckoutCartDetails() {
     checkoutButton.style.backgroundColor = 'green';
     checkoutButton.onclick = function() {
         DisplayDialog();
-    }
+    };
     checkoutPage.appendChild(checkoutButton);
 
     var checkoutWindowCloseButton = document.createElement("button");
@@ -804,7 +784,7 @@ function CheckoutCartDetails() {
     checkoutWindowCloseButton.classList.add("notifButton");
     checkoutWindowCloseButton.onclick = function() {
         checkoutPage.style.display = "none";
-    }
+    };
     checkoutPage.appendChild(checkoutWindowCloseButton);
 
     //Heading cotains the count of the number of items, which is changed realtime.
@@ -881,7 +861,7 @@ function GetConfirmationBody() {
     confirmationBody.classList.add("confirmation-body");
 
     var confirmationMessage = document.createElement("p");
-    totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
+    var totalCheckoutItems = checkoutCDs.length + checkoutbooks.length;
     confirmationMessage.innerHTML = "You are about to checkout the below " + totalCheckoutItems + " item(s).";
     confirmationBody.appendChild(confirmationMessage);
 
@@ -999,7 +979,7 @@ function AvailableListRemove(itemName, blockName) {
             availableBooks.splice(index, 1);
         }
     } else if (blockName == "DisplayedCDs") {
-        var index = availableCDs.indexOf(itemName);
+        index = availableCDs.indexOf(itemName);
         if (index > -1) {
             availableCDs.splice(index, 1);
         }
