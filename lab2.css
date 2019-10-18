@@ -26,7 +26,8 @@ userdetail {
     text-align: right;
 }
 
-header {
+header,
+.loginForm {
     background-image: url("images/header\ books.png");
     background-position: center;
     background-repeat: no-repeat;
@@ -37,10 +38,6 @@ header {
 .loginForm {
     background-image: url("images/background\ books.jpg");
     min-height: 580px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
 }
 
 form {
@@ -68,8 +65,7 @@ form div input[type=number] {
     box-sizing: border-box;
 }
 
-form div button,
-.greenButton {
+form div button {
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
@@ -79,7 +75,9 @@ form div button,
     width: 80%;
 }
 
-button:hover {
+form div button:hover,
+.button:hover,
+.confirmation-button:hover {
     opacity: 0.8;
 }
 
@@ -122,7 +120,8 @@ span.psw {
     font-size: 17px;
 }
 
-.tab button:hover {
+.tab button:hover,
+ul li:hover {
     background-color: #ddd;
 }
 
@@ -168,7 +167,7 @@ span.psw {
 }
 
 .button,
-.elementbutton {
+.confirmation-button {
     border: none;
     outline: 0;
     display: inline-block;
@@ -179,10 +178,6 @@ span.psw {
     cursor: pointer;
     width: 100%;
     border: 1px solid white;
-}
-
-.button:hover {
-    background-color: #555;
 }
 
 
@@ -221,10 +216,6 @@ ul li {
     color: black;
     display: block;
     position: relative;
-}
-
-ul li:hover {
-    background-color: #dfdede;
 }
 
 .close {
@@ -266,21 +257,8 @@ confirmation {
     border: 1px solid #888;
     width: 50%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    -webkit-animation-name: animatetop;
-    -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s
-}
-
-@-webkit-keyframes animatetop {
-    from {
-        top: -300px;
-        opacity: 0
-    }
-    to {
-        top: 0;
-        opacity: 1
-    }
 }
 
 @keyframes animatetop {
@@ -320,20 +298,8 @@ confirmation {
 }
 
 .confirmation-button {
-    border: none;
-    outline: 0;
-    display: inline-block;
-    padding: 8px;
-    color: white;
-    background-color: #000;
-    text-align: center;
-    cursor: pointer;
     width: 20%;
     margin: 5px;
-}
-
-.confirmation-button:hover {
-    background-color: #555;
 }
 
 .notifButton {
@@ -352,10 +318,22 @@ confirmation {
 
 .notif {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    padding: 5px 10px;
+    top: -5px;
+    right: -5px;
+    padding: 3px 6px;
     border-radius: 50%;
     background-color: red;
     color: white;
+}
+
+
+/* Styling Drop down */
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }

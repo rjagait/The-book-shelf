@@ -19,6 +19,7 @@ var cdDueIn = 10;
 //Flags used
 var isAdmin = false;
 var isReload = false;
+var isEnglish = true;
 
 /**
  * Master function which does the below actions
@@ -185,6 +186,7 @@ function AddUserDetails() {
         displayUserDetails.appendChild(cartButton);
     }
 
+    //add logout button
     var logoutButton = document.createElement("button");
     logoutButton.innerHTML = 'Logout';
     logoutButton.id = "checkoutButton";
@@ -194,7 +196,147 @@ function AddUserDetails() {
     }
     displayUserDetails.appendChild(logoutButton);
 
+    if (!isAdmin) {
+        //Add language change button
+        var languageOptionButton = document.createElement("button");
+        languageOptionButton.innerHTML = 'Language &#9660;';
+        languageOptionButton.classList.add("notifButton");
+
+        var dropDown = document.createElement("div");
+        var englishLanguage = document.createElement("button");
+        englishLanguage.innerHTML = 'English';
+        englishLanguage.classList.add('notifButton');
+        englishLanguage.style.position = 'unset';
+        englishLanguage.onclick = ChangeToEnglish;
+        dropDown.appendChild(englishLanguage);
+
+        var frenchLanguage = document.createElement("button");
+        frenchLanguage.innerHTML = 'French';
+        frenchLanguage.classList.add('notifButton');
+        frenchLanguage.style.position = 'unset';
+        frenchLanguage.onclick = ChangeToFrench;
+
+        dropDown.appendChild(frenchLanguage);
+        dropDown.classList.add('dropdown-content');
+        languageOptionButton.appendChild(dropDown);
+
+        var languageOptionBlock = document.createElement("div");
+        languageOptionBlock.classList.add('dropdown');
+        languageOptionBlock.appendChild(languageOptionButton);
+
+        displayUserDetails.appendChild(languageOptionBlock);
+    }
+
     userDetail.appendChild(displayUserDetails);
+}
+
+/**
+ * Changes the language of the available list titles to english
+ */
+function ChangeToEnglish() {
+    //no changes if already in english
+    if (isEnglish)
+        return;
+
+    var titles = document.getElementsByClassName("title");
+    for (i = 0; i < titles.length; i++) {
+        titles[i].innerHTML = titles[i].parentNode.parentNode.parentNode.id;
+    }
+    isEnglish = true;
+}
+
+/**
+ * Changes the language of the available list titles to french
+ */
+function ChangeToFrench() {
+    //no changes if already in french
+    if (!isEnglish)
+        return;
+
+    var titles = document.getElementsByClassName("title");
+    for (i = 0; i < titles.length; i++) {
+        var itemID = titles[i].parentNode.parentNode.parentNode.id;
+        titles[i].innerHTML = GetFrenchName(itemID);
+    }
+    isEnglish = false;
+}
+
+/**
+ * Returns the french translation of english item titles, if know.
+ * Else, adds and (*) mark at the end of the name
+ * @param {*} itemName Title of the item in english
+ */
+function GetFrenchName(itemName) {
+
+    switch (itemName) {
+        //Books
+        case "A Tale of Two Cities":
+             return  "Un conte de deux villes";
+            break;
+        case "The Lord of the Rings":
+             return  "Le Seigneur des Anneaux";
+            break;
+        case "The Little Prince":
+             return  "Le petit Prince";
+            break;
+        case "Harry Potter and the Philosopher's Stone":
+             return  "Harry Potter et la pierre philosophale";
+            break;
+        case "The Hobbit":
+             return  "Le Hobbit";
+            break;
+        case "Alice's Adventures in Wonderland":
+             return  "Les aventures d'Alice au Pays des Merveilles";
+            break;
+        case "Dream of the Red Chamber":
+             return  "Rêve de la chambre rouge";
+            break;
+        case "And Then There Were None":
+             return  "Et puis il n'y en avait pas";
+            break;
+        case "The Lion, the Witch and the Wardrobe":
+             return  "Le Lion, la Sorcière et l'Armoire";
+            break;
+        case "She, A History of Adventure":
+             return  "Elle, une histoire d'aventure";
+            break;
+
+            //CDs
+        case "Going Seventeen":
+             return  "En allant dix-sept";
+            break;
+        case "The Brown Band":
+             return  "La bande brune";
+            break;
+        case "The Ultimate Collection":
+             return  "La collection ultime";
+            break;
+        case "Clapton Chronicles, The Best of Eric Clapton":
+             return  "Clapton Chronicles, le meilleur d'Eric Clapton";
+            break;
+        case "50 Number Ones":
+             return  "50 Nombre";
+            break;
+        case "19 - by Adele":
+             return  "19 - de Adele";
+            break;
+        case "Now That’s What I Call Music! 92":
+             return  "C’est ce que j’appelle la musique! 92";
+            break;
+        case "April, and a Flower":
+             return  "Avril et une fleur";
+            break;
+        case "Mama - by EXO":
+             return  "Mama - par EXO";
+            break;
+        case "21 - by Adele":
+             return  "21 - de Adele";
+            break;
+
+            //If not add (*) that french version not available
+        default:
+            return itemName + "*";
+    }
 }
 
 /**
@@ -457,7 +599,10 @@ function addNewYesAction(blockName) {
 function createContentElement(itemName, blockName) {
     var elementTitle = document.createElement("p");
     elementTitle.classList.add("title");
-    elementTitle.innerHTML = itemName;
+    if (isEnglish)
+        elementTitle.innerHTML = itemName;
+    else
+        elementTitle.innerHTML = GetFrenchName(itemName);
 
     var elementContainer = document.createElement("div");
     elementContainer.classList.add("container");
@@ -465,7 +610,7 @@ function createContentElement(itemName, blockName) {
 
     //add and remove buttons for all cards
     var elementButton = document.createElement("button");
-    elementButton.classList.add("elementbutton");
+    elementButton.classList.add("button");
     if (isAdmin) {
         elementButton.innerHTML = "Remove";
         elementButton.onclick = function() {
@@ -646,7 +791,7 @@ function CheckoutCartDetails() {
     checkoutButton.disabled = true;
 
     checkoutButton.style.cssFloat = 'right';
-    checkoutButton.classList.add("notifButton"); //change color to green
+    checkoutButton.classList.add("notifButton");
     checkoutButton.style.backgroundColor = 'green';
     checkoutButton.onclick = function() {
         DisplayDialog();
